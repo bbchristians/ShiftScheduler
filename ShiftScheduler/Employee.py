@@ -48,12 +48,38 @@ class Employee():
     name = "Anonymous Employee"
     seniority = False;
     available_times = AvailabilityMap()
-    preffered_times = AvailabilityMap()
+    preferred_times = AvailabilityMap()
 
 
     def __init__(self, name, seniority):
         self.name = name
         self.seniority = seniority
+
+    def get_total_hours(self):
+        """
+        Returns the total available hours for the employee
+        :return: the total available hours for the employee
+        """
+        return self.available_times.get_total_hours()
+
+    def add_available_time(self, time):
+        """
+        Adds an available time to the employee
+        :param time: A ShiftTime object
+        :return: true if the time was added, false if it was
+        already in the available time map
+        """
+        return self.available_times.add_time(time)
+
+    def add_preferred_time(self, time):
+        """
+        Adds a preferred time to the employee
+        :param time: A ShiftTime object
+        :return: true if the time was added, false if it was
+        already in the preferred time map
+        """
+        return self.preferred_times.add_time(time)
+
 
 if __name__ == "__main__":
     bobby = Employee("Bobby Smith", True)
