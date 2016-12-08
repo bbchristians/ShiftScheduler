@@ -22,6 +22,12 @@ class Day(Enum):
     def __str__(self):
         return self.name
 
+    def is_weekday(self):
+        """
+        :return: True if the day is a weekday, else False
+        """
+        return self.value <= 5
+
 class ShiftTime():
     """
     Class that represents the time of a shift
@@ -35,22 +41,6 @@ class ShiftTime():
 
     def __str__(self):
         return str(self.day) + " at " + str(self.time)
-
-    # TODO Delete?
-    """
-    def __gt__(self, other):
-        # TODO Test
-        assert type(other) is ShiftTime
-
-        if self.day.value == other.day.value:
-            if self.time.hour == other.time.hour:
-                return self.time.minute > other.time.minute
-            elif self.time.hour > other.time.hour:
-                return True
-        elif self.day.value > other.day.value:
-            return True
-        return False
-    """
 
     def count(self):
         """

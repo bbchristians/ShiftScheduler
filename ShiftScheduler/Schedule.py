@@ -17,7 +17,7 @@ class Schedule():
 
     def __str__(self):
         ret = ""
-        for location in locations:
+        for location in self.locations:
             ret += location + ":\n"
 
             #Get all shifts at the location
@@ -32,8 +32,8 @@ class Schedule():
                 ret += str(shift) + ": "
 
                 # If there are no employees on the current shift
-                if not self.schedule.shifts.get(location).get(shift):
-                    ret + "Nobody"
+                if len(self.schedule.shifts.get(location).get(shift)) == 0:
+                    ret += "Nobody"
 
                 for employee in self.schedule.shifts.get(location).get(shift):
                     ret += str(employee) + " "
