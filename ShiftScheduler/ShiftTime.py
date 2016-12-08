@@ -36,6 +36,22 @@ class ShiftTime():
     def __str__(self):
         return str(self.day) + " at " + str(self.time)
 
+    def increase(self):
+        """
+        Increases the current time by 30 minutes
+        :return: None
+        """
+        new_time = None
+
+        if self.time.minute == 00 :
+            new_time = ShiftTime(day=self.day, hour=self.time.hour, min=30)
+        elif self.time.minute > 0 and self.time.minute <= 30:
+            new_time = ShiftTime(day=self.day, hour=self.time.hour+1, min=00)
+        elif self.time.minute > 30:
+            new_time = ShiftTime(day=self.day, hour=self.time.hour+1, min=30)
+
+        return new_time
+
 def shift_time_from_range(start_time, end_time):
     """
     Returns a list of ShiftTime's from given time range.
@@ -43,18 +59,28 @@ def shift_time_from_range(start_time, end_time):
     on the :00 and :30 minute marks
     :return: A List of ShiftTimes
     """
-    # TODO
-    return []
+    # Assertions to protect typing
+    assert type(start_time) is ShiftTime
+    assert type(end_time) is ShiftTime
+
+    cur_time = start_time
+    times = []
+
+    while cur_time.time.hour < end_time.time.hour:
+        times.append(cur_time)
+        cur_time = cur_time.increase()
+
+    return times
 
 if __name__ == "__main__":
     day1 = Day.tuesday
     day2 = Day.friday
 
-    time1 = make_time(12, 30)
-    time2 = make_time(14, 15)
+    shift1 = ShiftTime(day1, 9, 45)
+    shift2 = ShiftTime(day2, 18, 15)
 
-    shift1 = ShiftTime(day1, time1)
-    shift2 = ShiftTime(day2, time2)
+    #print(str(shift1))
+    #print(str(shift2))
 
-    print(str(shift1))
-    print(str(shift2))
+    for shift_time in shift_time_from_range(shift1, shift2):
+        print(str(shift_time)+"\n")
