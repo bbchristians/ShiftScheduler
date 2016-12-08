@@ -70,6 +70,9 @@ class Employee():
         self.name = name
         self.seniority = seniority
 
+    def __str__(self):
+        return self.name
+
     def get_total_hours(self):
         """
         Returns the total available hours for the employee

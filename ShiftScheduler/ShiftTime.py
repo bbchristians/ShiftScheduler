@@ -36,6 +36,30 @@ class ShiftTime():
     def __str__(self):
         return str(self.day) + " at " + str(self.time)
 
+    # TODO Delete?
+    """
+    def __gt__(self, other):
+        # TODO Test
+        assert type(other) is ShiftTime
+
+        if self.day.value == other.day.value:
+            if self.time.hour == other.time.hour:
+                return self.time.minute > other.time.minute
+            elif self.time.hour > other.time.hour:
+                return True
+        elif self.day.value > other.day.value:
+            return True
+        return False
+    """
+
+    def count(self):
+        """
+        :return: The count of the object (used to sort them)
+        """
+        return (self.day.value * 10000) + \
+               (self.time.hour * 100) + \
+                self.time.minute
+
     def increase(self):
         """
         Increases the current time by 30 minutes
