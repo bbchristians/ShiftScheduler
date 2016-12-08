@@ -29,9 +29,9 @@ class ShiftTime():
     day = Day.monday
     time = make_time(00, 00)
 
-    def __init__(self, day, time):
+    def __init__(self, day, hour, min):
         self.day = day
-        self.time = time
+        self.time = make_time(hour, min)
 
     def __str__(self):
         return str(self.day) + " at " + str(self.time)
