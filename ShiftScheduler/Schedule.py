@@ -51,6 +51,7 @@ class Schedule():
         :param end_time: The ending time of the shifts to add
         :return: None
         """
+        # TODO Test
         # Assure that the given location is valid
         assert location in self.locations
         # Get the list of times from the given range

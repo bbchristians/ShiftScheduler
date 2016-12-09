@@ -67,6 +67,7 @@ class ShiftTime():
         Increases the current time by 30 minutes
         :return: None
         """
+        # TODO Test
         new_time = None
 
         if self.time.minute == 00 :
@@ -85,6 +86,7 @@ def shift_time_from_range(start_time, end_time):
     on the :00 and :30 minute marks
     :return: A List of ShiftTimes
     """
+    # TODO Tset
     # Assertions to protect typing
     assert type(start_time) is ShiftTime
     assert type(end_time) is ShiftTime
