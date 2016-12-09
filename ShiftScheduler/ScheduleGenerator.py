@@ -38,12 +38,16 @@ def load_from_csv(file_name, schedule):
 
         # Fill the hours of un-availability for the Employee
         for i in range(2, len(line)):
-            parsed_shifts = ShiftTime.parse_range_from_record(line[i])
+            parsed_shifts, preferred = ShiftTime.parse_range_from_record(line[i])
 
             # For all shifts in the parsed record, set the employee
             # to unavailable at that time
             for shift in parsed_shifts:
-                employee.add_time(shift, False)
+                if preferred:
+                    employee.add_preferred_time(shift)
+                else:
+                    employee.add_time(shift, False)
+
 
         employees.append(employee)
 

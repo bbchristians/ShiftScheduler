@@ -102,7 +102,7 @@ class Employee():
         already in the preferred time map
         """
         # TODO Test
-        return self.preferred_times.add_time(time)
+        return self.preferred_times.add_time(time, True)
 
 
 if __name__ == "__main__":

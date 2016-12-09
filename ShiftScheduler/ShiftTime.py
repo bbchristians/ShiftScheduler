@@ -116,18 +116,18 @@ def parse_range_from_record(record):
     Parses a range in record format into a list
     of shifts
     :param record: String of form: "DAY START_H START_M END_H END_M"
-    :return: A list of ShiftTimes
+    :return: TUPLE( A list of ShiftTimes, True if preferred time (else false))
     """
 
     record = record.split()
 
     # assure the record isn't missing any fields
-    assert len(record) == 5
+    assert len(record) == 5 or len(record) == 6
 
     start_time = ShiftTime(DAY_DICTIONARY[record[0]], int(record[1]), int(record[2]))
     end_time = ShiftTime(DAY_DICTIONARY[record[0]], int(record[3]), int(record[4]))
 
-    return shift_time_from_range(start_time, end_time)
+    return shift_time_from_range(start_time, end_time), (len(record) == 6 and record[5] == "p")
 
 if __name__ == "__main__":
     day1 = Day.tuesday
