@@ -101,11 +101,12 @@ def shift_time_from_range(start_time, end_time):
     # Assertions to protect typing
     assert type(start_time) is ShiftTime
     assert type(end_time) is ShiftTime
+    assert start_time.time.hour <= end_time.time.hour
 
     cur_time = start_time
     times = []
 
-    while cur_time.time.hour < end_time.time.hour:
+    while cur_time.time < end_time.time:
         times.append(cur_time)
         cur_time = cur_time.increase()
 

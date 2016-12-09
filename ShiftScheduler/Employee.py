@@ -104,6 +104,19 @@ class Employee():
         # TODO Test
         return self.preferred_times.add_time(time, True)
 
+    def get_available_times(self):
+        """
+        :return: A sorted list of shifts the employee can work
+        """
+        available_times = []
+        for shift in sorted(self.available_times.availability_times.keys(),
+                                key=lambda x: x.count()):
+            if self.available_times.availability_times[shift]:
+                available_times.append(shift)
+
+        return available_times
+
+
 
 if __name__ == "__main__":
     bobby = Employee("Bobby Smith", True)

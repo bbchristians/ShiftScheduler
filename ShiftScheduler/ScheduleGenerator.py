@@ -69,6 +69,7 @@ def main():
                     WEEKDAY_HOURS_END, WEEKDAY_MINS_END)
             schedule.add_hours(LOCATIONS[0], start, end)
 
+    """
     # Create some Employees
     ben  = Employee.Employee("Ben Christians", True)
     kevin = Employee.Employee("Kevin REDACTED", False)
@@ -88,13 +89,18 @@ def main():
     schedule.assign(LOCATIONS[0], victoria, time3)
 
     #print(str(schedule))
+    """
 
     # Load records from csv
     employees = load_from_csv(EMPLOYEE_RECORDS, schedule)
 
     for employee in employees:
-        print(employee.get_total_hours())
+        print(str(employee) + " : " + str(employee.get_total_hours()) + " hours.")
 
+        for shift in employee.get_available_times():
+             schedule.assign(LOCATIONS[0], employee, shift)
+
+    print(str(schedule))
 
 
 
