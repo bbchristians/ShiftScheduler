@@ -28,6 +28,17 @@ class Day(Enum):
         """
         return self.value <= 5
 
+# A dictionary matching string codes to the members of
+# the 'Day' enum
+DAY_DICTIONARY = {'m': Day.monday,
+                  't': Day.tuesday,
+                  'w': Day.wednesday,
+                  'th': Day.thursday,
+                  'f': Day.friday,
+                  's': Day.saturday,
+                  'sun': Day.sunday}
+
+
 class ShiftTime():
     """
     Class that represents the time of a shift
@@ -99,6 +110,24 @@ def shift_time_from_range(start_time, end_time):
         cur_time = cur_time.increase()
 
     return times
+
+def parse_range_from_record(record):
+    """
+    Parses a range in record format into a list
+    of shifts
+    :param record: String of form: "DAY START_H START_M END_H END_M"
+    :return: A list of ShiftTimes
+    """
+
+    record = record.split()
+
+    # assure the record isn't missing any fields
+    assert len(record) == 4
+
+    start_time = ShiftTime(DAY_DICTIONARY[record[0]], int(record[1]), int(record[2]))
+    end_time = ShiftTime(DAY_DICTIONARY[record[0]], int(record[3]), int(record[4]))
+
+    return shift_time_from_range(start_time, end_time)
 
 if __name__ == "__main__":
     day1 = Day.tuesday

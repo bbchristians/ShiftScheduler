@@ -9,6 +9,42 @@ WEEKDAY_MINS_START = 45
 WEEKDAY_HOURS_END = 18
 WEEKDAY_MINS_END = 15
 
+EMPLOYEE_RECORDS = "EmployeeRecords.csv"
+
+def load_from_csv(file_name):
+    """
+    Imports a csv file containing all the employees' records
+    Note: Employees' schedules will be completed after the import
+    :param file_name: The name of the CSV file
+    :return: A list of employees
+    """
+    file = open(file_name)
+
+    employees = []
+    for line in file:
+        line = line.split(',')
+
+        # Generate Employee
+        name = line[0]
+        seniority = line[1] == "Yes"
+        employee = Employee.Employee(name, seniority)
+
+        # Fill the hours of availability for the Employee
+        for i in range(2, len(line)):
+            parsed_shifts = ShiftTime.parse_range_from_record(line[i])
+
+            # For all shifts in the parsed record, set the employee
+            # to unavailable at that time
+            for shift in parsed_shifts:
+                employee.add_time(shift, False)
+
+        employees.append(employee)
+
+    file.close()
+
+    return employees
+
+
 def main():
 
     # Create a basic Schedule
@@ -41,6 +77,10 @@ def main():
     schedule.assign(LOCATIONS[0], victoria, time3)
 
     print(str(schedule))
+
+    employees = load_from_csv(EMPLOYEE_RECORDS)
+
+    
 
 
 if __name__ == "__main__":
