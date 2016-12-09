@@ -122,7 +122,7 @@ def parse_range_from_record(record):
     record = record.split()
 
     # assure the record isn't missing any fields
-    assert len(record) == 4
+    assert len(record) == 5
 
     start_time = ShiftTime(DAY_DICTIONARY[record[0]], int(record[1]), int(record[2]))
     end_time = ShiftTime(DAY_DICTIONARY[record[0]], int(record[3]), int(record[4]))

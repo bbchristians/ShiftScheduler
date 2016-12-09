@@ -4,18 +4,20 @@ from ShiftScheduler import Schedule, Employee, ShiftTime
 # TODO ALL
 # TODO learn how to use SQL/otherdb with python and replace globals
 LOCATIONS = ["GPC", "GFH"]
-WEEKDAY_HOURS_START = 9
-WEEKDAY_MINS_START = 45
+WEEKDAY_HOURS_START = 10
+WEEKDAY_MINS_START = 00
 WEEKDAY_HOURS_END = 18
-WEEKDAY_MINS_END = 15
+WEEKDAY_MINS_END = 00
 
 EMPLOYEE_RECORDS = "EmployeeRecords.csv"
 
-def load_from_csv(file_name):
+def load_from_csv(file_name, schedule):
     """
     Imports a csv file containing all the employees' records
     Note: Employees' schedules will be completed after the import
     :param file_name: The name of the CSV file
+    :param schedule: The schedule holding all operating hours for
+    each location
     :return: A list of employees
     """
     file = open(file_name)
@@ -29,7 +31,12 @@ def load_from_csv(file_name):
         seniority = line[1] == "Yes"
         employee = Employee.Employee(name, seniority)
 
-        # Fill the hours of availability for the Employee
+        # Fill all the hours of the employee to be available (default)
+        for location in schedule.locations:
+            for shift in schedule.schedule.shifts[location].keys():
+                employee.add_time(shift, True)
+
+        # Fill the hours of un-availability for the Employee
         for i in range(2, len(line)):
             parsed_shifts = ShiftTime.parse_range_from_record(line[i])
 
@@ -64,8 +71,8 @@ def main():
     victoria = Employee.Employee("Victoria REDACTED", True)
 
     # Create some times
-    time1 = ShiftTime.ShiftTime(ShiftTime.Day.monday, 9, 45)
-    time2 = ShiftTime.ShiftTime(ShiftTime.Day.tuesday, 9, 45)
+    time1 = ShiftTime.ShiftTime(ShiftTime.Day.monday, 10, 00)
+    time2 = ShiftTime.ShiftTime(ShiftTime.Day.tuesday, 10, 00)
     time3 = ShiftTime.ShiftTime(ShiftTime.Day.monday, 10, 30)
 
     # Assign Employees Shifts
@@ -76,11 +83,15 @@ def main():
     schedule.assign(LOCATIONS[0], kevin, time3)
     schedule.assign(LOCATIONS[0], victoria, time3)
 
-    print(str(schedule))
+    #print(str(schedule))
 
-    employees = load_from_csv(EMPLOYEE_RECORDS)
+    # Load records from csv
+    employees = load_from_csv(EMPLOYEE_RECORDS, schedule)
 
-    
+    for employee in employees:
+        print(employee.get_total_hours())
+
+
 
 
 if __name__ == "__main__":
