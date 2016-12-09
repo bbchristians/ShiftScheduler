@@ -42,9 +42,21 @@ class ShiftTime():
     def __str__(self):
         return str(self.day) + " at " + str(self.time)
 
+    def __eq__(self, other):
+        # Assure the correct type
+        assert type(other) is ShiftTime
+
+        return self.day.value == other.day.value and \
+               self.time.hour == other.time.hour and \
+               self.time.minute == self.time.minute
+
+    def __hash__(self):
+        return self.count()
+
+
     def count(self):
         """
-        :return: The count of the object (used to sort them)
+        :return: The count of the object (used to sort/compare them)
         """
         return (self.day.value * 10000) + \
                (self.time.hour * 100) + \

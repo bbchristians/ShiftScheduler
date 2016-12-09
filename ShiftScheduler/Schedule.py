@@ -36,7 +36,7 @@ class Schedule():
                     ret += "Nobody"
 
                 for employee in self.schedule.shifts.get(location).get(shift):
-                    ret += str(employee) + " "
+                    ret += str(employee) + ", "
                 ret += "\n"
 
         return ret
@@ -69,6 +69,20 @@ class Schedule():
         self.locations.append(location)
         self.schedule.shifts.update({location: {}})
 
+    def assign(self, location, employee, shift):
+        """
+        Assigns an employee to a given shift
+        Note: Multiple employees can be assigned to one shift
+        :param location: The location to assign the shift at
+        :param employee: The employee to assign to the shift
+        :param shift: The shift to assign the employee to
+        :return: True if the employee was scheduled to the shift,
+        False if they weren't
+        """
+        # TODO Check if employee is available at the given time
+        self.schedule.shifts.get(location).get(shift).append(employee)
+        # TODO return the correct value
+        return True
 
 class ScheduleMap():
     """
