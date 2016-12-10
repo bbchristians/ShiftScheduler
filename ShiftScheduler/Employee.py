@@ -115,7 +115,13 @@ class Employee():
 
         return available_times
 
-
+    def available_for_shift(self, shift):
+        """
+        :param shift: The shift in question
+        :return: True if the employee is available for the
+        queried shift, else false.
+        """
+        return self.available_times.availability_times[shift]
 
 if __name__ == "__main__":
     bobby = Employee("Bobby Smith", True)

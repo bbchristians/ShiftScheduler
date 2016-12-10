@@ -1,4 +1,5 @@
 from ShiftScheduler import Employee, ShiftTime
+from random import shuffle
 
 class Schedule():
     """
@@ -83,6 +84,24 @@ class Schedule():
         self.schedule.shifts.get(location).get(shift).append(employee)
         # TODO return the correct value
         return True
+
+    def populate(self, employees):
+        """
+        Fills a schedule with at most one employee per shift
+        :param employees: A list of employees
+        :return: None
+        """
+        # TODO Change return value ?
+        # TODO Test
+        # TODO Implement preferred times
+        for location in self.schedule.shifts.keys():
+            for shift in self.schedule.shifts[location].keys():
+                # Randomize employees to attempt to make equality
+                shuffle(employees)
+                for employee in employees:
+                    if employee.available_for_shift(shift):
+                        self.assign(location, employee, shift)
+                        break
 
 class ScheduleMap():
     """

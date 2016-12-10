@@ -75,9 +75,8 @@ def main():
     for employee in employees:
         print(str(employee) + " : " + str(employee.get_total_hours()) + " hours.")
 
-        # Fill schedule with every employee available at the time
-        for shift in employee.get_available_times():
-             schedule.assign(LOCATIONS[0], employee, shift)
+    # Book at most one employee to each shift
+    schedule.populate(employees)
 
     print(str(schedule))
 
