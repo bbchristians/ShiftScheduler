@@ -69,38 +69,19 @@ def main():
                     WEEKDAY_HOURS_END, WEEKDAY_MINS_END)
             schedule.add_hours(LOCATIONS[0], start, end)
 
-    """
-    # Create some Employees
-    ben  = Employee.Employee("Ben Christians", True)
-    kevin = Employee.Employee("Kevin REDACTED", False)
-    victoria = Employee.Employee("Victoria REDACTED", True)
-
-    # Create some times
-    time1 = ShiftTime.ShiftTime(ShiftTime.Day.monday, 10, 00)
-    time2 = ShiftTime.ShiftTime(ShiftTime.Day.tuesday, 10, 00)
-    time3 = ShiftTime.ShiftTime(ShiftTime.Day.monday, 10, 30)
-
-    # Assign Employees Shifts
-    schedule.assign(LOCATIONS[0], ben, time1)
-    schedule.assign(LOCATIONS[0], kevin, time2)
-    schedule.assign(LOCATIONS[0], victoria, time2)
-    schedule.assign(LOCATIONS[0], ben, time3)
-    schedule.assign(LOCATIONS[0], kevin, time3)
-    schedule.assign(LOCATIONS[0], victoria, time3)
-
-    #print(str(schedule))
-    """
-
     # Load records from csv
     employees = load_from_csv(EMPLOYEE_RECORDS, schedule)
 
     for employee in employees:
         print(str(employee) + " : " + str(employee.get_total_hours()) + " hours.")
 
+        # Fill schedule with every employee available at the time
         for shift in employee.get_available_times():
              schedule.assign(LOCATIONS[0], employee, shift)
 
     print(str(schedule))
+
+    print(schedule.schedule.all_hours_filled())
 
 
 

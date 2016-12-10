@@ -65,6 +65,7 @@ class Schedule():
         :return: None
         """
         # TODO Test
+        # TODO Update all employees' availability at the hours of the new place
         self.locations.append(location)
         self.schedule.shifts.update({location: {}})
 
@@ -96,14 +97,27 @@ class ScheduleMap():
         for location in locations:
             self.shifts.update({location: {}})
 
-    def all_hours_filled(self):
+    def all_hours_filled(self, location=None):
         """
         Determines if all the hours in the schedule are filled
+        :param location: a location to determine the fullness of shifts.
+        If left as None, then query the fullness of all locations
         :return: True if all hours in the schedule are filled,
         else false
         """
-        # TODO
-        return False
+        # TODO Test
+        if location is None:
+            for location in self.shifts.keys():
+                for shift in self.shifts[location]:
+                    if len(self.shifts[location][shift]) == 0:
+                        return False
+        else:
+            for shift in self.shifts[location]:
+                if len(self.shifts[location][shift]) == 0:
+                    return False
+        # Return true if no all shifts of location(s) queried
+        # are mapped to a non-None object
+        return True
 
     def get_total_locations(self):
         """
