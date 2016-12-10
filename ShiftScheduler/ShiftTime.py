@@ -42,9 +42,10 @@ DAY_DICTIONARY = {'m': Day.monday,
 class ShiftTime():
     """
     Class that represents the time of a shift
+    :var day: the day of the shift (see ShiftTime.Day enum)
+    :var time: the time of the shift (datetime.time)
+        Note: only the hours and minutes matter for 'time'
     """
-    day = Day.monday
-    time = make_time(00, 00)
 
     def __init__(self, day, hour, min):
         self.day = day

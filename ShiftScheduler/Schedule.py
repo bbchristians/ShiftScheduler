@@ -8,8 +8,6 @@ class Schedule():
     :var locations: A list of locations that the employees can work,
     (ex. 'Front desk', 'Kitchen', 'Room 210', etc.)
     """
-    schedule = None
-    locations = []
 
     def __init__(self, locations ):
         self.locations = locations
