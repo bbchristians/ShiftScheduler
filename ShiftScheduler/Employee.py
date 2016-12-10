@@ -6,7 +6,9 @@ class AvailabilityMap():
     :var availability_times: a map linking ShiftTime -> Boolean to signify
     the availability of an employee at a given time
     """
-    availability_times = {}
+
+    def __init__(self):
+        self.availability_times = {}
 
     def __str__(self):
         # TODO Test
@@ -60,15 +62,12 @@ class Employee():
     :var preferred_times: an AvailabilityMap of all preferred times
     Note: True == time is preferred
     """
-    name = "Anonymous Employee"
-    seniority = False;
-    available_times = AvailabilityMap()
-    preferred_times = AvailabilityMap()
-
 
     def __init__(self, name, seniority):
         self.name = name
         self.seniority = seniority
+        self.available_times = AvailabilityMap()
+        self.preferred_times = AvailabilityMap()
 
     def __str__(self):
         return self.name
