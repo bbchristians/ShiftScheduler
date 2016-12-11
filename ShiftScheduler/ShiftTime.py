@@ -63,8 +63,10 @@ class ShiftTime():
                self.time.minute == other.time.minute
 
     def __hash__(self):
-        return self.count()
+        return hash((self.day, self.time))
 
+    def __ne__(self, other):
+        return not(self == other)
 
     def count(self):
         """
@@ -137,9 +139,8 @@ if __name__ == "__main__":
 
     shift1 = ShiftTime(day1, 9, 45)
     shift2 = ShiftTime(day2, 18, 15)
+    shift3 = ShiftTime(day2, 18, 15)
 
-    #print(str(shift1))
-    #print(str(shift2))
+    print(hash(shift2) == hash(shift3))
 
-    for shift_time in shift_time_from_range(shift1, shift2):
-        print(str(shift_time)+"\n")
+

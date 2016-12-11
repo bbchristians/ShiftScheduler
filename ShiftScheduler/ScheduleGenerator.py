@@ -74,6 +74,7 @@ def main():
 
     for employee in employees:
         print(str(employee) + " : " + str(employee.get_total_hours()) + " hours.")
+        #schedule.assign("GPC", employees[0], ShiftTime.ShiftTime(ShiftTime.Day.monday, 10, 00))
 
     # Book at most one employee to each shift
     schedule.populate(employees)

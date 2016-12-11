@@ -1,6 +1,8 @@
 from ShiftScheduler import Employee, ShiftTime
 from random import shuffle
 
+MAX_EMPLOYEES_PER_SHIFT = 1
+
 class Schedule():
     """
     A class to represent the overall schedule of the workplace
@@ -110,6 +112,26 @@ class Schedule():
         self.locations.append(location)
         self.schedule.shifts.update({location: {}})
 
+    def can_assign(self, location, shift):
+        """
+        Determines if an employee can be assigned at the current shift
+        :param location: the location to query
+        :param shift: the shift to query
+        :return: True if they can be assigned, else False
+        Note: This does not take into account if the employee is available
+        at the time of the given shift
+        """
+
+        if shift not in self.schedule.shifts[location].keys():
+            return False
+
+        schedule = self.schedule.shifts.get(location).get(shift)
+        length = len(schedule)
+
+        return length < MAX_EMPLOYEES_PER_SHIFT
+
+        #return len(self.schedule.shifts[location][shift]) < MAX_EMPLOYEES_PER_SHIFT
+
     def assign(self, location, employee, shift):
         """
         Assigns an employee to a given shift
@@ -123,8 +145,9 @@ class Schedule():
         # TODO Check if employee is available at the given time
         self.schedule.shifts.get(location).get(shift).append(employee)
         employee.hours_assigned += 0.5
-        # TODO return the correct value
-        return True
+        employee.available_times.availability_times.update({shift: False})
+
+        return employee in self.schedule.shifts.get(location).get(shift)
 
     def populate(self, employees):
         """
@@ -134,13 +157,30 @@ class Schedule():
         """
         # TODO Change return value?
         # TODO Test
-        # TODO Implement preferred times
         for location in self.schedule.shifts.keys():
+
+            # Assign employees to their preferred times
+            # Preffered times start with seniority
+            employees = sorted(employees, key=lambda x: 0 if x.seniority else 1)
+            for employee in employees:
+                for shift in employee.preferred_times.availability_times:
+
+                    if self.can_assign(location, shift):
+                        self.assign(location, employee, shift)
+
+            # Assign employees to the rest of the times
             for shift in sorted(self.schedule.shifts[location].keys(), key=lambda x: x.count()):
+
+                # Dont schedule employees to shifts that have >= the maximum number
+                # of employees already schedules for it
+                if not self.can_assign(location, shift):
+                    continue
+
                 # Sort in order of hours assigned (least to greatest) also
                 # factoring in seniority
                 employees = sorted(employees, key=lambda x: \
                     x.hours_assigned - (Employee.SENIORITY_EXTRA_HOURS if x.seniority else 0))
+
                 for employee in employees:
                     if employee.available_for_shift(shift):
                         self.assign(location, employee, shift)
