@@ -21,6 +21,10 @@ class Schedule():
 
             #Get all shifts at the location
             shifts = self.schedule.shifts.get(location).keys()
+            start_of_shift = None
+            end_of_shift = None
+            shift_employees = None
+            last_shift = None
 
             # If there are no shifts at the location
             if not shifts:
@@ -28,16 +32,27 @@ class Schedule():
 
             for shift in sorted(self.schedule.shifts.get(location),
                                 key=lambda x: x.count()):
-                ret += str(shift) + ": "
+                cur_employees = self.schedule.shifts.get(location).get(shift)
 
-                # If there are no employees on the current shift
-                if len(self.schedule.shifts.get(location).get(shift)) == 0:
-                    ret += "Nobody"
+                if start_of_shift is None:
+                    start_of_shift = shift
+                    shift_employees = cur_employees
+                elif not Employee.same_employees(shift_employees, cur_employees) or \
+                         start_of_shift.day != shift.day:
 
-                for employee in self.schedule.shifts.get(location).get(shift):
-                    ret += str(employee) + ", "
-                ret += "\n"
+                    # Display properly that nobody is on this shift
+                    if len(shift_employees) == 0:
+                        ret += "From " + str(start_of_shift) + " to " + str(shift) + ": Nobody\n"
+                    else:
+                        employee_string = ""
+                        for employee_each in shift_employees:
+                            employee_string += str(employee_each) + ","
+                        ret += "From " + str(start_of_shift) + " to " + str(shift) + ": " + employee_string + "\n"
 
+                    # Save current values for use on the next shift
+                    start_of_shift = shift
+                    shift_employees = cur_employees
+                last_shift = shift
         return ret
 
     def add_hours(self, location, start_time, end_time):

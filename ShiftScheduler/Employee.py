@@ -123,6 +123,20 @@ class Employee():
         """
         return self.available_times.availability_times[shift]
 
+def same_employees(list1, list2):
+    """
+    Determines if two lists of employees are equal
+    :param list1: a list of Employees
+    :param list2: a list of Employees
+    :return: True if the lists are equal, else False
+    """
+    # TODO Test
+    for employee1 in list1:
+        if not employee1 in list2:
+            return False
+    return True
+
+
 if __name__ == "__main__":
     bobby = Employee("Bobby Smith", True)
 
