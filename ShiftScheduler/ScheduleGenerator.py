@@ -9,7 +9,7 @@ WEEKDAY_MINS_START = 00
 WEEKDAY_HOURS_END = 18
 WEEKDAY_MINS_END = 00
 
-EMPLOYEE_RECORDS = "EmployeeRecords.csv"
+EMPLOYEE_RECORDS = "ManyEmployeeRecords.csv"
 
 def load_from_csv(file_name, schedule):
     """
@@ -81,6 +81,10 @@ def main():
     print(str(schedule))
 
     print(schedule.schedule.all_hours_filled())
+
+    print("Employee Hours:\n")
+    for employee in employees:
+        print(employee.name + ": " + str(employee.hours_assigned))
 
 
 

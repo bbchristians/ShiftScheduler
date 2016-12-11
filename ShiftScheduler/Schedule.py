@@ -41,9 +41,6 @@ class Schedule():
             shift_employees = None # the employee(s) of the current shift
             last_shift = None # last_shift needs to be recorded to reference when overlapping days
 
-
-
-
             for shift in sorted(self.schedule.shifts.get(location),
                                 key=lambda x: x.count()):
                 cur_employees = self.schedule.shifts.get(location).get(shift)
@@ -125,6 +122,7 @@ class Schedule():
         """
         # TODO Check if employee is available at the given time
         self.schedule.shifts.get(location).get(shift).append(employee)
+        employee.hours_assigned += 0.5
         # TODO return the correct value
         return True
 
@@ -134,13 +132,15 @@ class Schedule():
         :param employees: A list of employees
         :return: None
         """
-        # TODO Change return value ?
+        # TODO Change return value?
         # TODO Test
         # TODO Implement preferred times
         for location in self.schedule.shifts.keys():
-            for shift in self.schedule.shifts[location].keys():
-                # Randomize employees to attempt to make equality
-                shuffle(employees)
+            for shift in sorted(self.schedule.shifts[location].keys(), key=lambda x: x.count()):
+                # Sort in order of hours assigned (least to greatest) also
+                # factoring in seniority
+                employees = sorted(employees, key=lambda x: \
+                    x.hours_assigned - (Employee.SENIORITY_EXTRA_HOURS if x.seniority else 0))
                 for employee in employees:
                     if employee.available_for_shift(shift):
                         self.assign(location, employee, shift)

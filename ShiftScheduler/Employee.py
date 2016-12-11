@@ -1,5 +1,8 @@
 from ShiftScheduler import ShiftTime
 
+# The approximated extra hours to be given to employees with seniority
+SENIORITY_EXTRA_HOURS = 1
+
 class AvailabilityMap():
     """
     A class to represent each employee's availability
@@ -68,6 +71,7 @@ class Employee():
         self.seniority = seniority
         self.available_times = AvailabilityMap()
         self.preferred_times = AvailabilityMap()
+        self.hours_assigned = 0
 
     def __str__(self):
         return self.name
