@@ -60,7 +60,7 @@ class ShiftTime():
 
         return self.day.value == other.day.value and \
                self.time.hour == other.time.hour and \
-               self.time.minute == self.time.minute
+               self.time.minute == other.time.minute
 
     def __hash__(self):
         return self.count()

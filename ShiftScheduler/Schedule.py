@@ -15,20 +15,34 @@ class Schedule():
         self.schedule = ScheduleMap(locations)
 
     def __str__(self):
+        """
+        :return: A string representing the schedule in the form of:
+        LOCATION:
+        From DAY at START_TIME to DAY at END_TIME: EMPLOYEE, EMPLOYEE, ...
+        ...
+        ...
+        LOCATION:
+        ...
+        """
         ret = ""
         for location in self.locations:
             ret += location + ":\n"
 
-            #Get all shifts at the location
+            # Get all shifts at the location
             shifts = self.schedule.shifts.get(location).keys()
-            start_of_shift = None
-            end_of_shift = None
-            shift_employees = None
-            last_shift = None
 
             # If there are no shifts at the location
             if not shifts:
                 ret += "No Shifts\n"
+                continue
+
+            final_shift = self.last_shift(location)
+            start_of_shift = None # the start of the shift
+            shift_employees = None # the employee(s) of the current shift
+            last_shift = None # last_shift needs to be recorded to reference when overlapping days
+
+
+
 
             for shift in sorted(self.schedule.shifts.get(location),
                                 key=lambda x: x.count()):
@@ -37,21 +51,35 @@ class Schedule():
                 if start_of_shift is None:
                     start_of_shift = shift
                     shift_employees = cur_employees
-                elif not Employee.same_employees(shift_employees, cur_employees) or \
-                         start_of_shift.day != shift.day:
 
-                    # Display properly that nobody is on this shift
+                # If this is the last shift of the week
+                elif shift == final_shift:
                     if len(shift_employees) == 0:
-                        ret += "From " + str(start_of_shift) + " to " + str(shift) + ": Nobody\n"
+                        ret += "From " + str(start_of_shift) + " to " + str(shift.increase()) + ": Nobody\n"
                     else:
                         employee_string = ""
                         for employee_each in shift_employees:
                             employee_string += str(employee_each) + ","
-                        ret += "From " + str(start_of_shift) + " to " + str(shift) + ": " + employee_string + "\n"
+                        ret += "From " + str(start_of_shift) + " to " + str(shift.increase()) + ": " + employee_string + "\n"
+
+                # If there is any change of employees between shifts
+                # or shift of same employees overlaps to a non-continuous shift
+                elif not Employee.same_employees(shift_employees, cur_employees) or \
+                        (last_shift is not None and shift != last_shift.increase()):
+                    # Display properly that nobody is on this shift
+                    if len(shift_employees) == 0:
+                        ret += "From " + str(start_of_shift) + " to " + str(last_shift.increase()) + ": Nobody\n"
+                    else:
+                        employee_string = ""
+                        for employee_each in shift_employees:
+                            employee_string += str(employee_each) + ","
+                        ret += "From " + str(start_of_shift) + " to " + \
+                               str(last_shift.increase()) + ": " + employee_string + "\n"
 
                     # Save current values for use on the next shift
                     start_of_shift = shift
                     shift_employees = cur_employees
+
                 last_shift = shift
         return ret
 
@@ -117,6 +145,22 @@ class Schedule():
                     if employee.available_for_shift(shift):
                         self.assign(location, employee, shift)
                         break
+
+    def last_shift(self, location):
+        """
+        :param location: The location to get the last shift of
+        :return: The last shift of the location (Sunday is counted
+        as the last day of the week) or None if there are no shifts at the location
+        """
+        shifts = self.schedule.shifts[location]
+
+        # Sort the shifts in descending order
+        shifts = sorted(shifts, key=lambda x: -1*x.count())
+
+        if len(shifts) == 0:
+            return None
+
+        return shifts[0]
 
 class ScheduleMap():
     """

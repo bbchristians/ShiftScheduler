@@ -28,7 +28,7 @@ def load_from_csv(file_name, schedule):
 
         # Generate Employee
         name = line[0]
-        seniority = line[1] == "Yes"
+        seniority = (line[1].strip() == "yes")
         employee = Employee.Employee(name, seniority)
 
         # Fill all the hours of the employee to be available (default)
