@@ -3,15 +3,49 @@ from ShiftScheduler import Schedule, Employee, ShiftTime
 
 # TODO ALL
 # TODO learn how to use SQL/otherdb with python and replace globals
-LOCATIONS = ["GPC", "GFH"]
-WEEKDAY_HOURS_START = 10
-WEEKDAY_MINS_START = 00
-WEEKDAY_HOURS_END = 18
-WEEKDAY_MINS_END = 00
+# LOCATIONS = ["GPC", "GFH"]
+# WEEKDAY_HOURS_START = 10
+# WEEKDAY_MINS_START = 00
+# WEEKDAY_HOURS_END = 18
+# WEEKDAY_MINS_END = 00
 
+LOCATION_RECORDS = "LocationRecords.csv"
 EMPLOYEE_RECORDS = "ManyEmployeeRecords.csv"
 
-def load_from_csv(file_name, schedule):
+def load_schedule_from_csv(file_name):
+    """
+    Imports a csv file containing all the locations' records
+    :param file_name: The name of the CSV file
+    :return: A list of employees
+    """
+    file = open(file_name)
+
+    # Create new schedule with no locations (to be added later)
+    schedule = Schedule.Schedule([])
+
+    for line in file:
+        line = line.split(',')
+
+        # Add location to schedule
+        location = line[0]
+        schedule.add_location(location)
+
+        # Add hours to the schedule for the location
+        for i in range(1, len(line)):
+            record = line[i].strip().split(' ')
+            day = ShiftTime.DAY_DICTIONARY.get(record[0])
+            start_time = ShiftTime.ShiftTime(day, int(record[1]), int(record[2]))
+            end_time = ShiftTime.ShiftTime(day, int(record[3]), int(record[4]))
+
+            schedule.add_hours(location, start_time, end_time)
+
+
+    file.close()
+
+    return schedule
+
+
+def load_employees_from_csv(file_name, schedule):
     """
     Imports a csv file containing all the employees' records
     Note: Employees' schedules will be completed after the import
@@ -59,18 +93,19 @@ def load_from_csv(file_name, schedule):
 def main():
 
     # Create a basic Schedule
-    schedule = Schedule.Schedule(LOCATIONS)
+    # schedule = Schedule.Schedule(LOCATIONS)
 
-    for day in ShiftTime.Day:
-        if day.is_weekday():
-            start = ShiftTime.ShiftTime(day,
-                    WEEKDAY_HOURS_START, WEEKDAY_MINS_START)
-            end   = ShiftTime.ShiftTime(day,
-                    WEEKDAY_HOURS_END, WEEKDAY_MINS_END)
-            schedule.add_hours(LOCATIONS[0], start, end)
+    # for day in ShiftTime.Day:
+    #     if day.is_weekday():
+    #         start = ShiftTime.ShiftTime(day,
+    #                 WEEKDAY_HOURS_START, WEEKDAY_MINS_START)
+    #         end   = ShiftTime.ShiftTime(day,
+    #                 WEEKDAY_HOURS_END, WEEKDAY_MINS_END)
+    #         schedule.add_hours(LOCATIONS[0], start, end)
 
     # Load records from csv
-    employees = load_from_csv(EMPLOYEE_RECORDS, schedule)
+    schedule = load_schedule_from_csv(LOCATION_RECORDS)
+    employees = load_employees_from_csv(EMPLOYEE_RECORDS, schedule)
 
     for employee in employees:
         print(str(employee) + " : " + str(employee.get_total_hours()) + " hours.")
