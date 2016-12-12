@@ -157,6 +157,8 @@ class Schedule():
         """
         # TODO Change return value?
         # TODO Test
+        # TODO Group shifts together to create longer shifts
+        # TODO Generate more than one schedule
         for location in self.schedule.shifts.keys():
 
             # Assign employees to their preferred times
