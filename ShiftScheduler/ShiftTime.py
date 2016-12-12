@@ -35,7 +35,7 @@ DAY_DICTIONARY = {'m': Day.monday,
                   'w': Day.wednesday,
                   'th': Day.thursday,
                   'f': Day.friday,
-                  's': Day.saturday,
+                  'sat': Day.saturday,
                   'sun': Day.sunday}
 
 

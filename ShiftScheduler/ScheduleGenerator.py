@@ -2,15 +2,12 @@ import sqlite3
 from ShiftScheduler import Schedule, Employee, ShiftTime
 
 # TODO ALL
-# TODO learn how to use SQL/otherdb with python and replace globals
-# LOCATIONS = ["GPC", "GFH"]
-# WEEKDAY_HOURS_START = 10
-# WEEKDAY_MINS_START = 00
-# WEEKDAY_HOURS_END = 18
-# WEEKDAY_MINS_END = 00
+# TODO learn how to use SQL/otherdb with python
 
 LOCATION_RECORDS = "LocationRecords.csv"
 EMPLOYEE_RECORDS = "ManyEmployeeRecords.csv"
+#EMPLOYEE_RECORDS = "EmployeeRecords.csv"
+#EMPLOYEE_RECORDS = "OneEmployeeRecord.csv"
 
 def load_schedule_from_csv(file_name):
     """
@@ -92,33 +89,19 @@ def load_employees_from_csv(file_name, schedule):
 
 def main():
 
-    # Create a basic Schedule
-    # schedule = Schedule.Schedule(LOCATIONS)
-
-    # for day in ShiftTime.Day:
-    #     if day.is_weekday():
-    #         start = ShiftTime.ShiftTime(day,
-    #                 WEEKDAY_HOURS_START, WEEKDAY_MINS_START)
-    #         end   = ShiftTime.ShiftTime(day,
-    #                 WEEKDAY_HOURS_END, WEEKDAY_MINS_END)
-    #         schedule.add_hours(LOCATIONS[0], start, end)
-
     # Load records from csv
     schedule = load_schedule_from_csv(LOCATION_RECORDS)
     employees = load_employees_from_csv(EMPLOYEE_RECORDS, schedule)
 
-    for employee in employees:
-        print(str(employee) + " : " + str(employee.get_total_hours()) + " hours.")
-        #schedule.assign("GPC", employees[0], ShiftTime.ShiftTime(ShiftTime.Day.monday, 10, 00))
-
-    # Book at most one employee to each shift
+    # Schedule employees for shifts
     schedule.populate(employees)
 
+    # Display schedule
     print(str(schedule))
 
-    print(schedule.schedule.all_hours_filled())
+    print("All hours filled: " + str(schedule.schedule.all_hours_filled()))
 
-    print("Employee Hours:\n")
+    print("\nEmployee Hours:")
     for employee in employees:
         print(employee.name + ": " + str(employee.hours_assigned))
 
