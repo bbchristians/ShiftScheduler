@@ -17,7 +17,7 @@ class AvailabilityMap():
         # TODO Test
         available_times = "Available Times: \n"
         unavailable_times = "Unavailable Times: \n"
-        for key in self.availability_times.keys():
+        for key in sorted(self.availability_times.keys(), key=lambda x: x.count()):
             if self.availability_times.get(key):
                 available_times += str(key) + "\n"
             else:
@@ -76,12 +76,17 @@ class Employee():
     def __str__(self):
         return self.name
 
-    def get_total_hours(self):
+    def get_total_available_hours(self):
         """
-        Returns the total available hours for the employee
         :return: the total available hours for the employee
         """
         return self.available_times.get_total_hours()
+
+    def get_total_assigned_hours(self):
+        """
+        :return: the total assigned hours for the employee
+        """
+        return self.hours_assigned
 
     def add_time(self, time, available):
         """
@@ -119,12 +124,26 @@ class Employee():
 
         return available_times
 
+    def get_preferred_times(self):
+        """
+        :return: A sorted list of shifts the employee prefers
+        """
+        # TODO Test
+        preferred_times = []
+        for shift in sorted(self.preferred_times.availability_times.keys(),
+                                key=lambda x: x.count()):
+            if self.preferred_times.availability_times[shift]:
+                preferred_times.append(shift)
+
+        return preferred_times
+
     def available_for_shift(self, shift):
         """
         :param shift: The shift in question
         :return: True if the employee is available for the
         queried shift, else false.
         """
+        # TODO Test
         return self.available_times.availability_times[shift]
 
 def same_employees(list1, list2):

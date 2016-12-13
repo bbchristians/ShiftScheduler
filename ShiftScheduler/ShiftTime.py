@@ -93,6 +93,12 @@ class ShiftTime():
 
         return new_time
 
+    def get_day(self):
+        """
+        :return: self.day
+        """
+        return self.day
+
 def shift_time_from_range(start_time, end_time):
     """
     Returns a list of ShiftTime's from given time range.

@@ -1,7 +1,8 @@
 from ShiftScheduler import Employee, ShiftTime
 from random import shuffle
 
-MAX_EMPLOYEES_PER_SHIFT = 1
+MAX_EMPLOYEES_PER_SHIFT = 1 # Max imployees per shift
+PREFERRED_STRING_SHIFTS = 4 # Preferred number of shifts to assign to one employee
 
 class Schedule():
     """
@@ -130,8 +131,6 @@ class Schedule():
 
         return length < MAX_EMPLOYEES_PER_SHIFT
 
-        #return len(self.schedule.shifts[location][shift]) < MAX_EMPLOYEES_PER_SHIFT
-
     def assign(self, location, employee, shift):
         """
         Assigns an employee to a given shift
@@ -157,21 +156,23 @@ class Schedule():
         """
         # TODO Change return value?
         # TODO Test
-        # TODO Group shifts together to create longer shifts
-        # TODO Generate more than one schedule
-        for location in self.schedule.shifts.keys():
+        # TODO Fix problem with generating shifts that are too small
+        #  ^This typically happens when there is a location with say 6.5 hours per day of work
+        # TODO Generate more than one schedule (do in another function)
 
+        for location in self.schedule.shifts.keys():
             # Assign employees to their preferred times
-            # Preffered times start with seniority
+            # Preferred times start with seniority
             employees = sorted(employees, key=lambda x: 0 if x.seniority else 1)
             for employee in employees:
-                for shift in employee.preferred_times.availability_times:
+                for shift in employee.get_preferred_times():
+                    # attempt to schedule them for their preferred shift
+                    self.attempt_to_assign_shift(location, employee, shift)
 
-                    if self.can_assign(location, shift):
-                        self.assign(location, employee, shift)
+        for location in self.schedule.shifts.keys():
 
             # Assign employees to the rest of the times
-            for shift in sorted(self.schedule.shifts[location].keys(), key=lambda x: x.count()):
+            for shift in self.schedule.get_sorted_shifts_from_location(location):
 
                 # Dont schedule employees to shifts that have >= the maximum number
                 # of employees already schedules for it
@@ -184,9 +185,46 @@ class Schedule():
                     x.hours_assigned - (Employee.SENIORITY_EXTRA_HOURS if x.seniority else 0))
 
                 for employee in employees:
-                    if employee.available_for_shift(shift):
-                        self.assign(location, employee, shift)
-                        break
+                    self.attempt_to_assign_shift(location, employee, shift)
+                    # # Old code to assign a single shift at a time
+                    # if employee.available_for_shift(shift) and \
+                    #         not employee.get_total_assigned_hours() >= self.get_max_hours():
+                    #     self.assign(location, employee, shift)
+                    #     break
+
+    def attempt_to_assign_shift(self, location, employee, shift):
+        """
+        Attempts to assign the employee to a shift at the location
+        This will assign multiple shifts based off of Schedule.PREFFERED_STRING_SHIFTS
+        :param location: the location to assign the employee to
+        :param employee: the employee to assign to a shift
+        :param shift: the shift to assign the employee to
+        :return: True if the employee was assigned to all shifts else False
+        """
+        # Find the shifts after the current shift
+        potential_shifts = self.get_next_shifts(location, shift, PREFERRED_STRING_SHIFTS)
+
+        # Don't overbooking employees
+        if employee.get_total_assigned_hours() + .5 * len(potential_shifts) > self.get_max_hours():
+            return False
+
+        # First remove any shifts that arent on the day of the original shift
+        # Don't schedule employees for shifts that they aren't available for
+        for p_shift in potential_shifts:
+            if p_shift.get_day() != shift.day:
+                potential_shifts.remove(p_shift)
+            elif not employee.available_for_shift(p_shift):
+                return False
+
+        # Assign shifts
+        for p_shift in potential_shifts:
+            if self.can_assign(location, p_shift):
+                self.assign(location, employee, p_shift)
+            else:
+                # break to avoid gaps in shifts for odd reasons
+                return False
+        # return True because employee was assigned to all shifts
+        return True
 
     def last_shift(self, location):
         """
@@ -203,6 +241,43 @@ class Schedule():
             return None
 
         return shifts[0]
+
+    def get_max_hours(self):
+        """
+        :return: double representing the maximum hours an employee can work
+        """
+        # TODO actual calculation
+        # TODO Test
+        return 7
+
+    def get_next_shifts(self, location, shift, n_shifts):
+        """
+        :param location: the location of the shifts
+        :param shift: the shift to get the shifts after
+        :param n_shifts: how many shifts to get
+        :return: A sorted list of shifts starting with the given shift,
+        and ending with the shift (n_shifts-1) shifts in the future.
+        ex. get_next_shifts( "location", m9:30, 3) -> [m9:30, m10:00, m10:30]
+        Note: if there are not enough shifts before the end of the day,
+        then the list will only consist of the shifts that were before the end of the day
+        """
+        next_shifts = []
+
+        # return on bad input
+        if n_shifts < 1 or location not in self.schedule.shifts.keys():
+            return next_shifts
+
+        for iter_shift in self.schedule.get_sorted_shifts_from_location(location):
+            # if it (has) found the queried shift
+            if iter_shift == shift or len(next_shifts) > 0:
+                next_shifts.append(iter_shift)
+                n_shifts -= 1
+
+                # if it has found all the required shifts
+                if n_shifts <= 0:
+                    break
+
+        return next_shifts
 
 class ScheduleMap():
     """
@@ -244,6 +319,13 @@ class ScheduleMap():
         :return: The total number of locations in the schedule
         """
         return self.shifts.keys.size
+
+    def get_sorted_shifts_from_location(self, location):
+        """
+        :param location: the location to find shifts from
+        :return: A sorted list of shifts
+        """
+        return sorted(self.shifts[location].keys(), key=lambda x: x.count())
 
 if __name__ == "__main__":
     ben = Employee.Employee("Ben Christians", True)
