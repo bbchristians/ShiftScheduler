@@ -3,6 +3,9 @@ from random import shuffle
 
 MAX_EMPLOYEES_PER_SHIFT = 1 # Max imployees per shift
 PREFERRED_STRING_SHIFTS = 4 # Preferred number of shifts to assign to one employee
+SCHEDULE_VIEW_COL_WIDTH = 15
+
+
 
 class Schedule():
     """
@@ -82,6 +85,53 @@ class Schedule():
 
                 last_shift = shift
         return ret
+
+    def schedule_view(self, location):
+        """
+        A different to_string function
+        :param location: the location to get the schedule of
+        :return: A schedule formatted string of the schedule
+        at the given location
+        """
+        assert location in self.get_locations()
+
+        shifts = self.schedule.get_sorted_shifts_from_location(location)
+        schedule_str = location + "\n" + " "*SCHEDULE_VIEW_COL_WIDTH + "|"
+        all_times = self.all_times()
+        shift_times = set()
+
+        # Dress the top row to have the names of the days
+        for day in ShiftTime.Day:
+            schedule_str += set_string_width(str(day), SCHEDULE_VIEW_COL_WIDTH) + "|"
+
+        schedule_str += "\n"
+
+        # Get a set of all times on the schedule (to be used later)
+        for shift in all_times.schedule.get_sorted_shifts_from_location("ALL"):
+            if shift in shifts:
+                shift_times.update({shift.time})
+
+        # Add each employee listed for each shift
+        for time in sorted(shift_times, key=lambda x:x):
+            schedule_str += set_string_width(str(time), SCHEDULE_VIEW_COL_WIDTH) + "|"
+            for day in ShiftTime.Day:
+                this_shift = ShiftTime.ShiftTime(day, time.hour, time.minute)
+                if this_shift in shifts:
+                    employees = self.schedule.shifts.get(location).get(this_shift)
+                    if len(employees) == 0:
+                        schedule_str += set_string_width("NOBODY", SCHEDULE_VIEW_COL_WIDTH) + "|"
+                    else:
+                        schedule_str += set_string_width(str(employees[0]), SCHEDULE_VIEW_COL_WIDTH) + "|"
+            schedule_str += "\n"
+
+
+
+            # because we just want the time for each shift, ignore the day
+            # if shift.day == ShiftTime.Day.monday and:
+            #     schedule_str += set_string_width(str(shift.time), SCHEDULE_VIEW_COL_WIDTH) + "|"
+
+
+        return schedule_str
 
     def add_hours(self, location, start_time, end_time):
         """
@@ -279,6 +329,25 @@ class Schedule():
 
         return next_shifts
 
+    def get_locations(self):
+        """
+        :return: A sorted list of locations on the schedule
+        """
+        return sorted(self.schedule.shifts.keys(), key=lambda x: x)
+
+    @staticmethod
+    def all_times():
+        """
+        :return: a schedule filled with all times
+        """
+        schedule = Schedule(["ALL"])
+        for day in ShiftTime.Day:
+            start_time = ShiftTime.ShiftTime(day, 00, 00)
+            end_time = ShiftTime.ShiftTime(day, 23, 30)
+            schedule.add_hours("ALL", start_time, end_time)
+
+        return schedule
+
 class ScheduleMap():
     """
     A class to represent a schedule that maps times to
@@ -327,19 +396,44 @@ class ScheduleMap():
         """
         return sorted(self.shifts[location].keys(), key=lambda x: x.count())
 
+def set_string_width(string, width):
+    """
+    Fixes the string length to the given width
+    :param string: A String
+    :param width: A width (int)
+    :return: a fixed string. This either cuts off the lsat characters to
+    make the length = 'width', or adds spaces evenly to either side
+    """
+    if len(string) >= width:
+        return string[:width]
+    else:
+        num_spaces = width - len(string)
+        left = False
+        for space in range(0, num_spaces):
+            if left:
+                string = " " + string
+            else:
+                string += " "
+            left = not left
+
+    return string
+
 if __name__ == "__main__":
-    ben = Employee.Employee("Ben Christians", True)
-    locations = ['GPC', 'GFH']
+    # ben = Employee.Employee("Ben Christians", True)
+    # locations = ['GPC', 'GFH']
+    #
+    # time1 = ShiftTime.ShiftTime(ShiftTime.Day.tuesday, 9, 45)
+    # time2 = ShiftTime.ShiftTime(ShiftTime.Day.tuesday, 18, 15)
+    #
+    # schedule = Schedule(locations=locations)
+    #
+    # schedule.add_hours('GPC', time1, time2)
+    #
+    # print(str(ben))
+    # print(str(schedule))
 
-    time1 = ShiftTime.ShiftTime(ShiftTime.Day.tuesday, 9, 45)
-    time2 = ShiftTime.ShiftTime(ShiftTime.Day.tuesday, 18, 15)
-
-    schedule = Schedule(locations=locations)
-
-    schedule.add_hours('GPC', time1, time2)
-
-    print(str(ben))
-    print(str(schedule))
+    print(set_string_width("a", 10))
+    print("----------")
 
 
 

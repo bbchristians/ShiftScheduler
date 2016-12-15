@@ -39,7 +39,7 @@ DAY_DICTIONARY = {'m': Day.monday,
                   'sun': Day.sunday}
 
 
-class ShiftTime():
+class ShiftTime:
     """
     Class that represents the time of a shift
     :var day: the day of the shift (see ShiftTime.Day enum)
@@ -90,6 +90,18 @@ class ShiftTime():
             new_time = ShiftTime(day=self.day, hour=self.time.hour+1, min=00)
         elif self.time.minute > 30:
             new_time = ShiftTime(day=self.day, hour=self.time.hour+1, min=30)
+
+        return new_time
+
+    def increase_one_day(self):
+        """
+        Increases the time ShiftTime by one day
+        :return: A shift time of the next day at the same time
+        """
+        new_time = ShiftTime()
+        new_time.time = self.time
+
+        new_time.day = Day((self.day.value % 7) + 1)
 
         return new_time
 

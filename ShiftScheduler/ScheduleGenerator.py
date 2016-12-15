@@ -106,6 +106,9 @@ def main():
         print(employee.name + ": " + str(employee.hours_assigned))
 
 
+    print(schedule.schedule_view('GPC'))
+
+
 
 if __name__ == "__main__":
     main()
