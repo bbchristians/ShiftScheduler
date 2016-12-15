@@ -113,7 +113,7 @@ class Schedule():
 
         # Add each employee listed for each shift
         for time in sorted(shift_times, key=lambda x:x):
-            schedule_str += set_string_width(str(time), SCHEDULE_VIEW_COL_WIDTH) + "|"
+            schedule_str += set_string_width(str(time)[:-3], SCHEDULE_VIEW_COL_WIDTH) + "|"
             for day in ShiftTime.Day:
                 this_shift = ShiftTime.ShiftTime(day, time.hour, time.minute)
                 if this_shift in shifts:
@@ -122,14 +122,9 @@ class Schedule():
                         schedule_str += set_string_width("NOBODY", SCHEDULE_VIEW_COL_WIDTH) + "|"
                     else:
                         schedule_str += set_string_width(str(employees[0]), SCHEDULE_VIEW_COL_WIDTH) + "|"
+                else:
+                    schedule_str += set_string_width("", SCHEDULE_VIEW_COL_WIDTH) + "|"
             schedule_str += "\n"
-
-
-
-            # because we just want the time for each shift, ignore the day
-            # if shift.day == ShiftTime.Day.monday and:
-            #     schedule_str += set_string_width(str(shift.time), SCHEDULE_VIEW_COL_WIDTH) + "|"
-
 
         return schedule_str
 
